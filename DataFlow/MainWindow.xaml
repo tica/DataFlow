@@ -1,0 +1,204 @@
+﻿<Window x:Class="DataFlow.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:jas="clr-namespace:WPF.JoshSmith.Controls"
+        xmlns:vm="clr-namespace:DataFlow.ViewModel;assembly=DataFlow.ViewModel"
+        xmlns:c="clr-namespace:DataFlow.Controls"
+        Title="MainWindow" Height="768" Width="1024" Loaded="Window_Loaded_1" Closed="Window_Closed_1">
+    
+    <Window.Resources>
+        <ControlTemplate x:Key="FilterListControlTemplate">
+            <Border Margin="2,2,2,2" Background="Transparent">
+                <ItemsPresenter/>
+            </Border>
+            <ControlTemplate.Resources>
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black"/>
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent"/>
+                <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="Black"/>
+                <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent"/>
+            </ControlTemplate.Resources>
+        </ControlTemplate>
+        
+        <DataTemplate x:Key="FilterListItemTemplate">
+            <TextBlock Text="{Binding Path=DisplayName}" Background="Transparent"/>
+        </DataTemplate>
+
+        <ItemsPanelTemplate x:Key="PinListItemsPanelTemplate">
+            <UniformGrid Columns="1"/>
+        </ItemsPanelTemplate>
+
+        <DataTemplate x:Key="PinListItemTemplate">
+            <c:ConnectorPositionTracker>
+                <Ellipse x:Name="PinEllipse"
+                         StrokeThickness="2"                     
+                         Width="12"
+                         Height="12"
+                         VerticalAlignment="Center"
+                         HorizontalAlignment="Center"
+                         PreviewMouseLeftButtonDown="Pin_PreviewMouseLeftButtonDown_1"
+                         PreviewMouseLeftButtonUp="PinEllipse_PreviewMouseLeftButtonUp_1"
+                         MouseDown="PinEllipse_MouseDown_1"
+                         >
+                    <Ellipse.ToolTip>
+                        <StackPanel Orientation="Vertical">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Path=Desc.DisplayName}"/>
+                                <TextBlock Text=" : "/>
+                                <TextBlock Text="{Binding Path=Desc.DataType.Name}"/>
+                            </StackPanel>
+                            <TextBlock Text="{Binding Path=Value}"/>
+                        </StackPanel>
+                    </Ellipse.ToolTip>                    
+                    <Ellipse.Style>
+                        <Style TargetType="{x:Type Ellipse}">
+                            <Setter Property="Fill" Value="Yellow"/>
+                            <Setter Property="Stroke" Value="Black"/>
+                            <Style.Triggers>                                
+                                <DataTrigger Binding="{Binding Path=IsConnected}" Value="True">
+                                    <Setter Property="Fill" Value="Green"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=IsConnected}" Value="False">
+                                    <Setter Property="Fill" Value="Transparent"/>
+                                </DataTrigger>
+                                
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Fill" Value="White"/>
+                                </Trigger>
+
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>                                        
+                                        <Condition Binding="{Binding IsValidConnectionTarget}" Value="False"/>
+                                        <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="True"/>
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="Fill" Value="Red"/>
+                                </MultiDataTrigger>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding IsValidConnectionTarget}" Value="True"/>
+                                        <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="True"/>
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="Fill" Value="LimeGreen"/>
+                                </MultiDataTrigger>
+
+                                <DataTrigger Binding="{Binding Path=IsNewConnectionStart}" Value="True">
+                                    <Setter Property="Fill" Value="White"/>
+                                </DataTrigger>
+
+                            </Style.Triggers>
+                        </Style>
+                    </Ellipse.Style>
+                </Ellipse>
+            </c:ConnectorPositionTracker>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:FilterViewModel}">
+            <c:FilterPositionTracker>                                    
+                <Border BorderThickness="2" BorderBrush="Black"
+                        Background="LightBlue"
+                        Width="120" Height="70"
+                        MouseDown="Filter_MouseDown_1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                        </Grid.ColumnDefinitions>
+
+                        <ItemsControl Grid.Column="0"
+                                      ItemsSource="{Binding Path=InputPins}"
+                                      ItemTemplate="{StaticResource PinListItemTemplate}"
+                                      ItemsPanel="{StaticResource PinListItemsPanelTemplate}">
+                        </ItemsControl>
+                    
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding Path=DisplayName}"
+                                   TextAlignment="Center"
+                                   TextWrapping="Wrap"
+                                   VerticalAlignment="Center"/>
+
+                        <ItemsControl Grid.Column="2"
+                                      ItemsSource="{Binding Path=OutputPins}"
+                                      ItemTemplate="{StaticResource PinListItemTemplate}"
+                                      ItemsPanel="{StaticResource PinListItemsPanelTemplate}">
+                        </ItemsControl>
+                    </Grid>
+                </Border>
+            </c:FilterPositionTracker>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:ConnectionViewModel}">
+            <Path Data="{Binding Path=PathGeometry}"
+                  Stroke="Black"
+                  StrokeThickness="2"/>
+        </DataTemplate>
+    </Window.Resources>
+    
+    <DockPanel>
+        <Border x:Name="menuBar" DockPanel.Dock="Top" Height="70" Background="DarkGray">
+            <Border Margin="10" Padding="5" CornerRadius="5" Background="LightGray">
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="Single Step"
+                            Margin="5"
+                            Padding="5,0,5,0"
+                            Command="{Binding Path=SingleStepCommand}"/>
+                    <Button Content="Full Step"
+                            Margin="5"
+                            Padding="5,0,5,0"
+                            Command="{Binding Path=FullStepCommand}"/>
+                    <Button Content="Run"
+                            Margin="5"
+                            Padding="5,0,5,0"
+                            Command="{Binding Path=RunCommand}"/>
+                    <Button Content="Stop"
+                            Margin="5"
+                            Padding="5,0,5,0"
+                            Command="{Binding Path=StopCommand}"/>
+                </StackPanel>
+            </Border>
+        </Border>
+        
+        <Border DockPanel.Dock="Right" Background="DarkGray">
+            <Border Margin="10,0,10,10" Padding="10" CornerRadius="5" Background="LightGray">
+                <StackPanel Orientation="Vertical">
+
+                    <TextBlock Background="LightBlue" Padding="8,2,8,2">Source Filters</TextBlock>
+                    <ListBox x:Name="SourceFilterList"
+                             Template="{StaticResource FilterListControlTemplate}"
+                             ItemTemplate="{StaticResource FilterListItemTemplate}"
+                             PreviewMouseLeftButtonDown="FilterList_PreviewMouseLeftButtonDown_1"/>
+
+                    <TextBlock Background="LightBlue" Padding="8,2,8,2">Transform Filters</TextBlock>
+                    <ListBox x:Name="TransformFilterList"
+                             Template="{StaticResource FilterListControlTemplate}"
+                             ItemTemplate="{StaticResource FilterListItemTemplate}"
+                             PreviewMouseLeftButtonDown="FilterList_PreviewMouseLeftButtonDown_1"/>
+
+                    <TextBlock Background="LightBlue" Padding="8,2,8,2">Sink Filters</TextBlock>
+                    <ListBox x:Name="SinkFilterList"
+                             Template="{StaticResource FilterListControlTemplate}"
+                             ItemTemplate="{StaticResource FilterListItemTemplate}"
+                             PreviewMouseLeftButtonDown="FilterList_PreviewMouseLeftButtonDown_1"/>
+                </StackPanel>
+            </Border>
+        </Border>
+
+        <ItemsControl x:Name="workSpace"
+			Grid.Row="0"
+			Grid.Column="0"
+            PreviewMouseMove="workSpace_PreviewMouseMove_1"
+            MouseLeftButtonUp="workSpace_PreviewMouseLeftButtonUp_1">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>        
+                    <jas:DragCanvas AllowDragging="True" AllowDragOutOfView="False"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemContainerStyle>
+                <Style>
+                    <Setter Property="Canvas.Left" Value="{Binding Left, Mode=TwoWay}" />
+                    <Setter Property="Canvas.Top" Value="{Binding Top, Mode=TwoWay}" />
+                    <Setter Property="jas:DragCanvas.CanBeDragged" Value="{Binding IsDraggable}"/>
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+        </ItemsControl>
+    </DockPanel>
+</Window>
