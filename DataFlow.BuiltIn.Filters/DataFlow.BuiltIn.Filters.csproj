@@ -41,9 +41,11 @@
   <ItemGroup>
     <Compile Include="AddIntegers.cs" />
     <Compile Include="DisplayNumber.cs" />
+    <Compile Include="DisplayString.cs" />
     <Compile Include="NumberSequence.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RandomNumberGenerator.cs" />
+    <Compile Include="ToString.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataFlow.Model.Filters\DataFlow.Model.Filters.csproj">
