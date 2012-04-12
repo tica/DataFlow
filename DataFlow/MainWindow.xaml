@@ -28,67 +28,69 @@
         </ItemsPanelTemplate>
 
         <DataTemplate x:Key="PinListItemTemplate">
-            <c:ConnectorPositionTracker>
-                <Ellipse x:Name="PinEllipse"
-                         StrokeThickness="2"                     
-                         Width="12"
-                         Height="12"
-                         VerticalAlignment="Center"
-                         HorizontalAlignment="Center"
-                         PreviewMouseLeftButtonDown="Pin_PreviewMouseLeftButtonDown_1"
-                         PreviewMouseLeftButtonUp="PinEllipse_PreviewMouseLeftButtonUp_1"
-                         MouseDown="PinEllipse_MouseDown_1"
-                         >
-                    <Ellipse.ToolTip>
-                        <StackPanel Orientation="Vertical">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding Path=Desc.DisplayName}"/>
-                                <TextBlock Text=" : "/>
-                                <TextBlock Text="{Binding Path=Desc.DataType.Name}"/>
+            <Border BorderThickness="2,1,2,1" Margin="-2,-1,-2,-1" BorderBrush="Black">
+                <c:ConnectorPositionTracker Margin="-4">
+                    <Ellipse x:Name="PinEllipse"
+                             StrokeThickness="2"                             
+                             Width="20"
+                             Height="20"
+                             VerticalAlignment="Center"
+                             HorizontalAlignment="Center"
+                             PreviewMouseLeftButtonDown="Pin_PreviewMouseLeftButtonDown_1"
+                             PreviewMouseLeftButtonUp="PinEllipse_PreviewMouseLeftButtonUp_1"
+                             MouseDown="PinEllipse_MouseDown_1"
+                             >
+                        <Ellipse.ToolTip>
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Path=Desc.DisplayName}"/>
+                                    <TextBlock Text=" : "/>
+                                    <TextBlock Text="{Binding Path=Desc.DataType.Name}"/>
+                                </StackPanel>
+                                <TextBlock Text="{Binding Path=Value}"/>
                             </StackPanel>
-                            <TextBlock Text="{Binding Path=Value}"/>
-                        </StackPanel>
-                    </Ellipse.ToolTip>                    
-                    <Ellipse.Style>
-                        <Style TargetType="{x:Type Ellipse}">
-                            <Setter Property="Fill" Value="Yellow"/>
-                            <Setter Property="Stroke" Value="Black"/>
-                            <Style.Triggers>                                
-                                <DataTrigger Binding="{Binding Path=IsConnected}" Value="True">
-                                    <Setter Property="Fill" Value="Green"/>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding Path=IsConnected}" Value="False">
-                                    <Setter Property="Fill" Value="Transparent"/>
-                                </DataTrigger>
+                        </Ellipse.ToolTip>                    
+                        <Ellipse.Style>
+                            <Style TargetType="{x:Type Ellipse}">
+                                <Setter Property="Fill" Value="Yellow"/>
+                                <Setter Property="Stroke" Value="Black"/>
+                                <Style.Triggers>                                
+                                    <DataTrigger Binding="{Binding Path=IsConnected}" Value="True">
+                                        <Setter Property="Fill" Value="Green"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Path=IsConnected}" Value="False">
+                                        <Setter Property="Fill" Value="Transparent"/>
+                                    </DataTrigger>
                                 
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Fill" Value="White"/>
-                                </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Fill" Value="White"/>
+                                    </Trigger>
 
-                                <MultiDataTrigger>
-                                    <MultiDataTrigger.Conditions>                                        
-                                        <Condition Binding="{Binding IsValidConnectionTarget}" Value="False"/>
-                                        <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="True"/>
-                                    </MultiDataTrigger.Conditions>
-                                    <Setter Property="Fill" Value="Red"/>
-                                </MultiDataTrigger>
-                                <MultiDataTrigger>
-                                    <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding IsValidConnectionTarget}" Value="True"/>
-                                        <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="True"/>
-                                    </MultiDataTrigger.Conditions>
-                                    <Setter Property="Fill" Value="LimeGreen"/>
-                                </MultiDataTrigger>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>                                        
+                                            <Condition Binding="{Binding IsValidConnectionTarget}" Value="False"/>
+                                            <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="True"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Fill" Value="Red"/>
+                                    </MultiDataTrigger>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding IsValidConnectionTarget}" Value="True"/>
+                                            <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="True"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Fill" Value="LimeGreen"/>
+                                    </MultiDataTrigger>
 
-                                <DataTrigger Binding="{Binding Path=IsNewConnectionStart}" Value="True">
-                                    <Setter Property="Fill" Value="White"/>
-                                </DataTrigger>
+                                    <DataTrigger Binding="{Binding Path=IsNewConnectionStart}" Value="True">
+                                        <Setter Property="Fill" Value="White"/>
+                                    </DataTrigger>
 
-                            </Style.Triggers>
-                        </Style>
-                    </Ellipse.Style>
-                </Ellipse>
-            </c:ConnectorPositionTracker>
+                                </Style.Triggers>
+                            </Style>
+                        </Ellipse.Style>
+                    </Ellipse>
+                </c:ConnectorPositionTracker>
+            </Border>
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type vm:FilterViewModel}">
@@ -114,7 +116,8 @@
                                    Text="{Binding Path=DisplayName}"
                                    TextAlignment="Center"
                                    TextWrapping="Wrap"
-                                   VerticalAlignment="Center"/>
+                                   VerticalAlignment="Center"
+                                   Margin="4"/>
 
                         <ItemsControl Grid.Column="2"
                                       ItemsSource="{Binding Path=OutputPins}"
